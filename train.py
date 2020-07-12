@@ -47,9 +47,18 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 
     # create dataset
-    logger.info("Creating dataset")
+    logger.info("Creating Datasets")
     train_dataset, test_dataset, num_train_samples, num_test_samples, labels = get_voc_dataset(args.batch_size)
     logger.info("Number of train samples: {},  Number of test samples: {},  Number of classes = {}".format(num_train_samples, num_test_samples, len(labels)-1))
+    
+    # create model
+    logger.info("Creating Model")
+    model = get_model(args.arch, args.pretrained_type, args.neg_ratio)
+    logger.info("Model Created")
+    
+    
+    
+    ############################################################
     
     # get model
     if args.arch == "ssd_mobilenet2":
@@ -70,8 +79,12 @@ def main():
     ssd_model_path = utils_io.get_model_path(args.arch)
     if args.load_weights:
         ssd_model.load_weights(ssd_model_path)
+    
+    ############################################################
+    
+    
+    
     ssd_log_path = utils_io.get_log_path(args.arch)
-
 
     # We calculate prior boxes for one time and use it for all operations because all images are the same sizes
     prior_boxes = utils_bbox.generate_prior_boxes(hyper_params["feature_map_shapes"], hyper_params["aspect_ratios"])

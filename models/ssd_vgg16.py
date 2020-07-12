@@ -30,7 +30,7 @@ class L2Normalization(Layer):
     def call(self, inputs):
         return tf.nn.l2_normalize(inputs, axis=-1) * self.scale
 
-def get_model(hyper_params):
+def SSD_VGG16(hyper_params):
     """Generating ssd model for hyper params.
     inputs:
         hyper_params = dictionary

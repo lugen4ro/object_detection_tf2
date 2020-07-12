@@ -4,7 +4,7 @@ from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.models import Model
 from .header import get_head_from_outputs
 
-def get_model(hyper_params):
+def SSD_Mobilenet2(hyper_params):
     """Generating ssd model for hyper params.
     inputs:
         hyper_params = dictionary
