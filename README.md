@@ -1,4 +1,4 @@
-# object_detection_tf2
+# Object Detection with SSD/YOLO in tensorflow2
 
 ## To Do
 - [ ] Change model definition from functional to class
@@ -23,3 +23,10 @@
 - [ ] MIT License
 
 
+
+
+## References
+Various sources were used as reference on a concept level and code level.
+
+Code Repositories
+- https://github.com/FurkanOM/tf-ssd 
