@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Layer, Input, Conv2D, MaxPool2D
 from tensorflow.keras.models import Model
-from utils import bbox_utils
+from utils import utils_bbox
 
 class SSDDecoder(Layer):
     """Generating bounding boxes and labels from ssd predictions.
@@ -16,7 +16,7 @@ class SSDDecoder(Layer):
             1 to total label number
         pred_scores = (batch_size, top_n)
     """
-    def __init__(self, prior_boxes, variances, max_total_size=200, score_threshold=0.5, **kwargs):
+    def __init__(self, prior_boxes, variances, max_total_size=200, score_threshold=0.1, **kwargs):
         super(SSDDecoder, self).__init__(**kwargs)
         self.prior_boxes = prior_boxes
         self.variances = variances
@@ -39,14 +39,14 @@ class SSDDecoder(Layer):
         batch_size = tf.shape(pred_deltas)[0]
         #
         pred_deltas *= self.variances
-        pred_bboxes = bbox_utils.get_bboxes_from_deltas(self.prior_boxes, pred_deltas)
+        pred_bboxes = utils_bbox.get_bboxes_from_deltas(self.prior_boxes, pred_deltas)
         #
         pred_labels_map = tf.expand_dims(tf.argmax(pred_label_probs, -1), -1)
         pred_labels = tf.where(tf.not_equal(pred_labels_map, 0), pred_label_probs, tf.zeros_like(pred_label_probs))
         # Reshape bboxes for non max suppression
         pred_bboxes = tf.reshape(pred_bboxes, (batch_size, -1, 1, 4))
         #
-        final_bboxes, final_scores, final_labels, _ = bbox_utils.non_max_suppression(
+        final_bboxes, final_scores, final_labels, _ = utils_bbox.non_max_suppression(
                                                                     pred_bboxes, pred_labels,
                                                                     max_output_size_per_class=self.max_total_size,
                                                                     max_total_size=self.max_total_size,

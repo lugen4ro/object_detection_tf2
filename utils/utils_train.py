@@ -3,7 +3,7 @@ import math
 from utils import utils_bbox
 
 SSD = {
-    "ssd_vgg16": {
+    "SSD_VGG16": {
         "img_size": 300,
         "feature_map_shapes": [38, 19, 10, 5, 3, 1],
         "aspect_ratios": [[1., 2., 1./2.],
@@ -13,7 +13,17 @@ SSD = {
                          [1., 2., 1./2.],
                          [1., 2., 1./2.]],
     },
-    "ssd_mobilenet2": {
+    "SSD_Mobilenet2": {
+        "img_size": 300,
+        "feature_map_shapes": [19, 10, 5, 3, 2, 1],
+        "aspect_ratios": [[1., 2., 1./2.],
+                         [1., 2., 1./2., 3., 1./3.],
+                         [1., 2., 1./2., 3., 1./3.],
+                         [1., 2., 1./2., 3., 1./3.],
+                         [1., 2., 1./2.],
+                         [1., 2., 1./2.]],
+    },
+    "SSDLite_Mobilenet2": {
         "img_size": 300,
         "feature_map_shapes": [19, 10, 5, 3, 2, 1],
         "aspect_ratios": [[1., 2., 1./2.],
@@ -52,12 +62,27 @@ def scheduler(epoch):
     outputs:
         learning_rate = float learning rate value
     """
-    if epoch < 100:
+    if epoch < 10:
         return 1e-3
-    elif epoch < 125:
+    elif epoch < 50:
         return 1e-4
     else:
         return 1e-5
+    
+    
+                
+# def adjust_learning_rate(optimizer, epoch, step):
+#     """LR schedule polynomial rate decay"""
+    
+#     # Polynomial Rate Decay
+#     power = args.rate
+#     max_decay_steps = args.epochs
+#     lr = args.lr * ((1 - epoch / max_decay_steps) ** power)
+
+#     for param_group in optimizer.param_groups:
+#         param_group['lr'] = lr
+        
+#     return lr
 
 def get_step_size(total_items, batch_size):
     """Get step size for given total item size and batch size.

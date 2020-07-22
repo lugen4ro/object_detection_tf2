@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Layer, Input, Conv2D, MaxPool2D, Activation
+from keras.regularizers import l2
 
 class HeadWrapper(Layer):
     """Merging all feature maps for detections.
@@ -50,6 +51,7 @@ def get_head_from_outputs(hyper_params, outputs):
         pred_deltas = merged outputs for bbox delta head
         pred_labels = merged outputs for bbox label head
     """
+    reg_factor=5e-4
     total_labels = hyper_params["total_labels"]
     # +1 for ratio 1
     len_aspect_ratios = [len(x) + 1 for x in hyper_params["aspect_ratios"]]
@@ -57,8 +59,8 @@ def get_head_from_outputs(hyper_params, outputs):
     boxes_head = []
     for i, output in enumerate(outputs):
         aspect_ratio = len_aspect_ratios[i]
-        labels_head.append(Conv2D(aspect_ratio * total_labels, (3, 3), padding="same", name="{}_conv_label_output".format(i+1))(output))
-        boxes_head.append(Conv2D(aspect_ratio * 4, (3, 3), padding="same", name="{}_conv_boxes_output".format(i+1))(output))
+        labels_head.append(Conv2D(aspect_ratio * total_labels, (3, 3), padding="same", kernel_initializer="glorot_normal", kernel_regularizer=l2(reg_factor), name="{}_conv_label_output".format(i+1))(output))
+        boxes_head.append(Conv2D(aspect_ratio * 4, (3, 3), padding="same", kernel_initializer="glorot_normal", kernel_regularizer=l2(reg_factor), name="{}_conv_boxes_output".format(i+1))(output))
     #
     pred_labels = HeadWrapper(total_labels, name="labels_head")(labels_head)
     pred_labels = Activation("softmax", name="conf")(pred_labels)

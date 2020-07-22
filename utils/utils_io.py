@@ -22,7 +22,7 @@ def get_model_path(model_type):
     outputs:
         model_path = os model path, for example: "trained/ssd_vgg16_model_weights.h5"
     """
-    main_path = "/home/work2/weights/object_detection"
+    main_path = "/home/work2/weights/"
     if not os.path.exists(main_path):
         os.makedirs(main_path)
     model_path = os.path.join(main_path, "{}_model_weights.h5".format(model_type))

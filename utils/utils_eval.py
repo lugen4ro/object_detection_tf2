@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from utils import utils_bbox
+from time import time
 
 def init_stats(labels):
     stats = {}
@@ -17,11 +18,13 @@ def init_stats(labels):
     return stats
 
 def update_stats(pred_bboxes, pred_labels, pred_scores, gt_boxes, gt_labels, stats):
-    iou_map = bbox_utils.generate_iou_map(pred_bboxes, gt_boxes)
+    iou_map = utils_bbox.generate_iou_map(pred_bboxes, gt_boxes)
     merged_iou_map = tf.reduce_max(iou_map, axis=-1)
     max_indices_each_gt = tf.argmax(iou_map, axis=-1, output_type=tf.int32)
     sorted_ids = tf.argsort(merged_iou_map, direction="DESCENDING")
     #
+    
+    ### this here is fucking slow... takes like 0.7s per batch
     count_holder = tf.unique_with_counts(tf.reshape(gt_labels, (-1,)))
     for i, gt_label in enumerate(count_holder[0]):
         if gt_label == -1:
@@ -86,12 +89,14 @@ def calculate_mAP(stats):
 
 def evaluate_predictions(dataset, pred_bboxes, pred_labels, pred_scores, labels, batch_size):
     stats = init_stats(labels)
+    
     for batch_id, image_data in enumerate(dataset):
         imgs, gt_boxes, gt_labels = image_data
         start = batch_id * batch_size
         end = start + batch_size
         batch_bboxes, batch_labels, batch_scores = pred_bboxes[start:end], pred_labels[start:end], pred_scores[start:end]
         stats = update_stats(batch_bboxes, batch_labels, batch_scores, gt_boxes, gt_labels, stats)
+
+    
     stats, mAP = calculate_mAP(stats)
-    print("mAP: {}".format(float(mAP)))
-    return stats
+    return mAP

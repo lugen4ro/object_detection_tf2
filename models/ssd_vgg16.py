@@ -96,10 +96,16 @@ def SSD_VGG16(hyper_params):
     pred_deltas, pred_labels = get_head_from_outputs(hyper_params, [conv4_3_norm, conv7, conv8_2, conv9_2, conv10_2, conv11_2])
     return Model(inputs=input, outputs=[pred_deltas, pred_labels])
 
+
+
+
+
+
 def init_model(model):
     """Initializing model with dummy data for load weights with optimizer state and also graph construction.
     inputs:
         model = tf.keras.model
 
     """
+    
     model(tf.random.uniform((1, 512, 512, 3)))

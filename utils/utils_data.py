@@ -29,14 +29,15 @@ def preprocess(x, final_height, final_width, augmentation_fn=None, evaluate=Fals
     gt_label = tf.cast(x["objects"]["label"] + 1, tf.int32)
     
     # exclude difficult objects for evaluation
+    # from official document --> "Objects marked as difficult are currently ignored in the evaluation of the challenge."
     if evaluate:
         not_difficult = tf.logical_not(x["objects"]["is_difficult"])
-        gt_boxes = gt_boxes[not_diff]
-        gt_labels = gt_labels[not_diff]
+        gt_box = gt_box[not_difficult]
+        gt_label = gt_label[not_difficult]
         
     # apply specified augmentation
     if augmentation_fn:
-        img, gt_boxes = augmentation_fn(img, gt_box)
+        img, gt_box = augmentation_fn(img, gt_box)
         
     return img, gt_box, gt_label
 
