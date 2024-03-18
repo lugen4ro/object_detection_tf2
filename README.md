@@ -22,11 +22,3 @@
 - [ ] Add support for YOLOv4
 - [ ] MIT License
 
-
-
-
-## References
-Various sources were used as reference on a concept level and code level.
-
-Code Repositories
-- https://github.com/FurkanOM/tf-ssd 
